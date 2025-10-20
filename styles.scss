@@ -455,31 +455,30 @@ a {
   }
 
   .hero {
-    height: 100vh;
-    min-height: calc(var(--scale) * 630);
+    height: auto;
+    min-height: auto;
 
     &__content {
-      padding: calc(var(--scale) * 60) var(--grid-margin) 0;
+      padding: calc(var(--scale) * 77) var(--grid-margin) 0;
       display: flex;
       flex-direction: column;
-      gap: calc(var(--scale) * 23);
+      gap: calc(var(--scale) * 44);
     }
 
     &__image {
-      width: calc(var(--scale) * 355);
-      height: calc(var(--scale) * 355);
+      width: calc(var(--scale) * 168);
+      height: calc(var(--scale) * 168);
       flex-shrink: 0;
     }
 
-    // Tagline остается внизу Hero на мобиле
+    // Tagline внутри контента, не абсолютно
     .tagline__wrapper {
-      position: absolute;
-      bottom: calc(var(--scale) * 20);
-      left: var(--grid-margin);
-      right: var(--grid-margin);
+      position: static;
       display: flex;
       flex-direction: row;
       gap: calc(var(--scale) * 20);
+      padding-top: calc(var(--scale) * 44);
+      padding-bottom: calc(var(--scale) * 20);
     }
 
     &__text {
@@ -488,9 +487,9 @@ a {
     }
 
     &__title {
-      font-size: calc(var(--scale) * 38);
+      font-size: calc(var(--scale) * 36 );
       line-height: 1;
-      margin-bottom: calc(var(--scale) * 23);
+      margin-bottom: calc(var(--scale) * 44);
     }
   }
 
