@@ -469,12 +469,16 @@ a {
       width: 100%;
       height: 100%;
       z-index: 1;
+      pointer-events: none; // Предотвращаем взаимодействие с изображениями
     }
 
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      user-select: none; // Запрещаем выделение
+      -webkit-user-drag: none; // Запрещаем перетаскивание в WebKit
+      pointer-events: none; // Предотвращаем взаимодействие
     }
   }
 
@@ -484,6 +488,7 @@ a {
     left: var(--grid-margin);
     z-index: 10;
     max-width: calc(100% - var(--grid-margin) * 2);
+    isolation: isolate; // Создаем новый контекст наложения для mix-blend-mode
   }
 
   &__title {
@@ -498,6 +503,7 @@ a {
   &__text-wrapper {
     position: relative;
     width: 100%;
+    isolation: isolate; // Создаем контекст для mix-blend-mode
   }
 
   &__text-content {
@@ -522,6 +528,7 @@ a {
     line-height: 1.4;
     max-width: calc(var(--scale) * 600);
     margin: 0;
+    color: #fff;
     // Сдвигаем текст на 1 колонку вправо
     margin-left: calc(calc(var(--scale) * 20) + ((100vw - var(--grid-margin) * 2 - calc(var(--scale) * 220)) / 12)); // gap + 1 column
   }
