@@ -31,6 +31,8 @@
             <nav class="header__nav">
                 <a href="#hero" class="nav-link">Кто я</a>
                 <a href="#triptych" class="nav-link">Как делаю</a>
+                <a href="#cases" class="nav-link">Работы</a>
+                <a href="https://t.me/EgorTaranets" target="_blank" class="btn btn--mobile-menu">Связаться</a>
             </nav>
             <a href="https://t.me/EgorTaranets" target="_blank" class="btn btn--header">Связаться</a>
             <button class="header__burger" aria-label="Открыть меню" aria-expanded="false">
@@ -101,7 +103,63 @@
         </div>
     </section>
 
+    <!-- Cases Section -->
+    <section class="cases" id="cases">
+        <div class="case" data-case="sberprime">
+            <!-- Progress indicator -->
+            <div class="case__progress">
+                <div class="case__progress-bar active" data-slide="0"></div>
+                <div class="case__progress-bar" data-slide="1"></div>
+            </div>
+
+            <div class="case__slider">
+                <div class="case__slide">
+                    <picture>
+                        <source media="(max-width: 768px)" srcset="assets/cases/sberprime/sberprime_mobile_1.png">
+                        <img src="assets/cases/sberprime/sberprime_desktop_1.png" alt="СберПрайм - Слайд 1" class="case__image">
+                    </picture>
+                </div>
+                <div class="case__slide">
+                    <picture>
+                        <source media="(max-width: 768px)" srcset="assets/cases/sberprime/sberprime_mobile_2.png">
+                        <img src="assets/cases/sberprime/sberprime_desktop_2.png" alt="СберПрайм - Слайд 2" class="case__image">
+                    </picture>
+                </div>
+            </div>
+
+            <!-- Static content wrapper -->
+            <div class="case__content-static">
+                <h2 class="case__title" style="background: linear-gradient(180deg, #FFFFFF 60%, #33CE33 90%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">СберПрайм</h2>
+
+                <!-- Text with fade effect -->
+                <div class="case__text-wrapper">
+                    <div class="case__text-content active" data-slide="0">
+                        <p class="case__text" style="color: #fff;">Генерация большой серии из 144 консистентных креативов для лендинга с минимальным постродакшеном благодаря разработке мастер-промта</p>
+                    </div>
+                    <div class="case__text-content" data-slide="1">
+                        <p class="case__text" style="color: #fff;">Создание уникальной визуальной концепции с использованием нейросетей и автоматизация процесса генерации контента для масштабных рекламных кампаний</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation arrows for desktop -->
+            <button class="case__arrow case__arrow--prev" aria-label="Предыдущий слайд">&lt;</button>
+            <button class="case__arrow case__arrow--next" aria-label="Следующий слайд">&gt;</button>
+
+            <div class="case__navigation">
+                <button class="case__nav-dot" aria-label="Слайд 1"></button>
+                <button class="case__nav-dot" aria-label="Слайд 2"></button>
+            </div>
+            <div class="case__hint">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
     <script>
+      // Header burger menu
       const header = document.querySelector('.header');
       const burger = document.querySelector('.header__burger');
       if (burger) {
@@ -110,6 +168,187 @@
           burger.setAttribute('aria-expanded', String(isOpen));
         });
       }
+
+      // Cases slider functionality
+      class CaseSlider {
+        constructor(caseElement) {
+          this.case = caseElement;
+          this.slider = caseElement.querySelector('.case__slider');
+          this.slides = Array.from(caseElement.querySelectorAll('.case__slide'));
+          this.textContents = Array.from(caseElement.querySelectorAll('.case__text-content'));
+          this.dots = Array.from(caseElement.querySelectorAll('.case__nav-dot'));
+          this.progressBars = Array.from(caseElement.querySelectorAll('.case__progress-bar'));
+          this.prevArrow = caseElement.querySelector('.case__arrow--prev');
+          this.nextArrow = caseElement.querySelector('.case__arrow--next');
+          this.hint = caseElement.querySelector('.case__hint');
+          this.currentIndex = 0;
+          this.startX = 0;
+          this.currentX = 0;
+          this.isDragging = false;
+          this.threshold = 50;
+          this.wheelTimeout = null;
+
+          this.init();
+        }
+
+        init() {
+          this.updateDots();
+          this.updateArrows();
+          this.updateProgressBars();
+          this.bindEvents();
+          this.hideHintAfterDelay();
+        }
+
+        bindEvents() {
+          // Dot navigation
+          this.dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => this.goToSlide(index));
+          });
+
+          // Arrow navigation
+          if (this.prevArrow) {
+            this.prevArrow.addEventListener('click', () => {
+              if (this.currentIndex > 0) {
+                this.goToSlide(this.currentIndex - 1);
+              }
+            });
+          }
+          if (this.nextArrow) {
+            this.nextArrow.addEventListener('click', () => {
+              if (this.currentIndex < this.slides.length - 1) {
+                this.goToSlide(this.currentIndex + 1);
+              }
+            });
+          }
+
+          // Keyboard navigation
+          document.addEventListener('keydown', this.handleKeyDown.bind(this));
+
+          // Отслеживаем нативный скролл для обновления UI
+          this.slider.addEventListener('scroll', this.handleScroll.bind(this), { passive: true });
+
+          // Скрываем hint при первом скролле
+          this.slider.addEventListener('scroll', () => {
+            this.hideHint();
+          }, { once: true, passive: true });
+
+          // Тапы по левой/правой части экрана (как в Stories)
+          this.case.addEventListener('click', this.handleTap.bind(this));
+        }
+
+        handleTap(e) {
+          // Игнорируем клики по кнопкам и интерактивным элементам
+          if (e.target.closest('button, a, .case__arrow')) {
+            return;
+          }
+
+          const rect = this.case.getBoundingClientRect();
+          const clickX = e.clientX - rect.left;
+          const halfWidth = rect.width / 2;
+
+          if (clickX < halfWidth) {
+            // Тап по левой половине - предыдущий слайд
+            if (this.currentIndex > 0) {
+              this.goToSlide(this.currentIndex - 1);
+            }
+          } else {
+            // Тап по правой половине - следующий слайд
+            if (this.currentIndex < this.slides.length - 1) {
+              this.goToSlide(this.currentIndex + 1);
+            }
+          }
+        }
+
+        handleScroll() {
+          // Определяем текущий слайд на основе позиции скролла
+          const scrollLeft = this.slider.scrollLeft;
+          const slideWidth = this.slider.offsetWidth;
+          const newIndex = Math.round(scrollLeft / slideWidth);
+
+          if (newIndex !== this.currentIndex) {
+            this.currentIndex = newIndex;
+            this.updateDots();
+            this.updateArrows();
+            this.updateProgressBars();
+            this.updateContent();
+          }
+        }
+
+        handleKeyDown(e) {
+          if (e.key === 'ArrowLeft' && this.currentIndex > 0) {
+            this.goToSlide(this.currentIndex - 1);
+            this.hideHint();
+          } else if (e.key === 'ArrowRight' && this.currentIndex < this.slides.length - 1) {
+            this.goToSlide(this.currentIndex + 1);
+            this.hideHint();
+          }
+        }
+
+        goToSlide(index) {
+          this.currentIndex = index;
+          // Используем нативный скролл вместо transform
+          this.slider.scrollTo({
+            left: index * this.slider.offsetWidth,
+            behavior: 'smooth'
+          });
+          this.updateDots();
+          this.updateArrows();
+          this.updateProgressBars();
+          this.updateContent();
+        }
+
+        updateDots() {
+          this.dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === this.currentIndex);
+          });
+        }
+
+        updateArrows() {
+          if (this.prevArrow) {
+            this.prevArrow.disabled = this.currentIndex === 0;
+          }
+          if (this.nextArrow) {
+            this.nextArrow.disabled = this.currentIndex === this.slides.length - 1;
+          }
+        }
+
+        updateContent() {
+          this.textContents.forEach((content, index) => {
+            content.classList.toggle('active', index === this.currentIndex);
+          });
+        }
+
+        updateProgressBars() {
+          this.progressBars.forEach((bar, index) => {
+            bar.classList.toggle('active', index === this.currentIndex);
+          });
+        }
+
+        hideHint() {
+          if (this.hint) {
+            this.hint.style.opacity = '0';
+            setTimeout(() => {
+              this.hint.style.display = 'none';
+            }, 300);
+          }
+        }
+
+        hideHintAfterDelay() {
+          if (this.hint) {
+            setTimeout(() => {
+              this.hideHint();
+            }, 3000);
+          }
+        }
+      }
+
+      // Initialize all case sliders
+      document.addEventListener('DOMContentLoaded', () => {
+        const cases = document.querySelectorAll('.case');
+        cases.forEach(caseElement => {
+          new CaseSlider(caseElement);
+        });
+      });
     </script>
 </body>
 </html>

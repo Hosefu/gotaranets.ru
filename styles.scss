@@ -112,11 +112,15 @@ a {
     background: var(--color-text-light);
     color: var(--color-text-dark);
     border-color: var(--color-text-light);
-    
+
     &:hover {
       background: transparent;
       color: var(--color-text-light);
     }
+  }
+
+  &--mobile-menu {
+    display: none; // Скрыта на десктопе
   }
 }
 
@@ -412,6 +416,213 @@ a {
 }
 
 // ========================================
+// Cases Section
+// ========================================
+.cases {
+  background: var(--color-bg-dark);
+}
+
+.case {
+  position: relative;
+  width: 100vw;
+  height: calc(var(--scale) * 660); // Фиксированная высота для десктопа
+  overflow: hidden;
+
+  &__slider {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto; // Включаем реальный горизонтальный скролл
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory; // Snap к слайдам
+    scroll-behavior: smooth; // Плавная прокрутка
+    scrollbar-width: none; // Скрываем скроллбар в Firefox
+    -ms-overflow-style: none; // Скрываем скроллбар в IE/Edge
+    overscroll-behavior-x: contain; // Предотвращаем браузерную навигацию
+    -webkit-overflow-scrolling: touch; // Плавный скролл на iOS
+    cursor: grab;
+
+    &::-webkit-scrollbar {
+      display: none; // Скрываем скроллбар в Chrome/Safari
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__slide {
+    min-width: 100%;
+    flex-shrink: 0; // Запрещаем сжатие слайдов
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    scroll-snap-align: start; // Snap к началу каждого слайда
+    scroll-snap-stop: always; // Всегда останавливаемся на слайдах
+
+    picture {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__content-static {
+    position: absolute;
+    bottom: calc(var(--scale) * 44);
+    left: var(--grid-margin);
+    z-index: 10;
+    max-width: calc(100% - var(--grid-margin) * 2);
+  }
+
+  &__title {
+    font-family: var(--font-heading);
+    font-size: calc(var(--scale) * 64); // Как у triptych__title
+    font-weight: var(--weight-bold);
+    font-variation-settings: "wdth" 62.5;
+    line-height: 1;
+    margin-bottom: calc(var(--scale) * 22);
+  }
+
+  &__text-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  &__text-content {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    &.active {
+      opacity: 1;
+      visibility: visible;
+      position: relative;
+    }
+  }
+
+  &__text {
+    font-family: var(--font-body);
+    font-size: calc(var(--scale) * 14);
+    line-height: 1.4;
+    max-width: calc(var(--scale) * 600);
+    margin: 0;
+    // Сдвигаем текст на 1 колонку вправо
+    margin-left: calc(calc(var(--scale) * 20) + ((100vw - var(--grid-margin) * 2 - calc(var(--scale) * 220)) / 12)); // gap + 1 column
+  }
+
+  &__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-family: var(--font-body);
+    font-size: calc(var(--scale) * 48);
+    line-height: 1;
+    cursor: pointer;
+    z-index: 10;
+    transition: opacity 0.3s ease;
+    color: #fff;
+    mix-blend-mode: difference;
+    padding: 0;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    &--prev {
+      left: calc(var(--scale) * 44);
+    }
+
+    &--next {
+      right: calc(var(--scale) * 44);
+    }
+  }
+
+  &__progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: none; // Скрыт на десктопе, показываем только на мобилке
+    gap: calc(var(--scale) * 3);
+    padding: calc(var(--scale) * 8) var(--grid-margin) calc(var(--scale) * 10);
+    z-index: 20;
+  }
+
+  &__progress-bar {
+    flex: 1;
+    height: calc(var(--scale) * 5);
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 0;
+    transition: background 0.3s ease;
+    overflow: hidden;
+    position: relative;
+
+    &.active {
+      background: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  &__navigation {
+    position: absolute;
+    bottom: calc(var(--scale) * 44);
+    right: var(--grid-margin);
+    display: none; // Убираем на десктопе
+    gap: calc(var(--scale) * 10);
+    z-index: 10;
+  }
+
+  &__nav-dot {
+    width: calc(var(--scale) * 10);
+    height: calc(var(--scale) * 10);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 1);
+      width: calc(var(--scale) * 30);
+      border-radius: calc(var(--scale) * 5);
+    }
+  }
+
+  &__hint {
+    display: none; // Убираем анимированную стрелочку
+  }
+}
+
+
+// ========================================
 // Mobile Adjustments (при BASE=375)
 // ========================================
 @media (max-width: 768px) {
@@ -428,6 +639,11 @@ a {
       padding: calc(var(--scale) * 30) var(--grid-margin);
       z-index: 999;
       align-items: center;
+
+      .btn--mobile-menu {
+        display: inline-block; // Показываем кнопку в мобильном меню
+        margin-top: calc(var(--scale) * 10);
+      }
     }
 
     &__burger {
@@ -581,6 +797,44 @@ a {
       grid-column: auto;
       color: var(--color-text-light);
       mix-blend-mode: difference;
+    }
+  }
+
+  .case {
+    height: calc(var(--scale) * 800); // Фиксированная высота для мобилки
+
+    &__progress {
+      display: flex; // Показываем индикатор прогресса на мобилке
+    }
+
+    &__title {
+      font-size: calc(var(--scale) * 64); // Как у triptych__title (был 36)
+    }
+
+    &__content-static {
+      bottom: calc(var(--scale) * 50); // Опускаем контент ниже
+    }
+
+    &__hint {
+      right: calc(var(--scale) * 20);
+
+      svg {
+        width: calc(var(--scale) * 32);
+        height: calc(var(--scale) * 32);
+      }
+    }
+
+    &__text {
+      // Отступ слева в 1 колонку + дополнительный отступ
+      margin-left: calc(var(--scale) * 40 + (100vw - var(--grid-margin) * 2 - var(--scale) * 220) / 12);
+    }
+
+    &__navigation {
+      display: none; // Убираем индикаторы точки на мобилке
+    }
+
+    &__arrow {
+      display: none; // Hide arrows on mobile
     }
   }
 }
