@@ -420,13 +420,17 @@ a {
 // ========================================
 .skills {
   background: var(--gradient-hero-bg);
-  padding: calc(var(--scale) * 102) 0 calc(var(--scale) * 102);
+  padding: calc(var(--scale) * 102) var(--grid-margin);
+
+  .container {
+    max-width: none;
+    padding: 0;
+  }
 
   &__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: calc(var(--scale) * 40);
-    padding: 0 var(--grid-margin);
   }
 
   &__category {
@@ -887,12 +891,11 @@ a {
   }
 
   .skills {
-    padding: calc(var(--scale) * 77) 0 calc(var(--scale) * 77);
+    padding: calc(var(--scale) * 77) var(--grid-margin);
 
     &__grid {
       grid-template-columns: 1fr;
       gap: calc(var(--scale) * 60);
-      padding: 0 var(--grid-margin);
     }
 
     &__title {
